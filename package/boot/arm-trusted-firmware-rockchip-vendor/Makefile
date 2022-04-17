@@ -37,6 +37,12 @@ define Package/arm-trusted-firmware-rk3399
     VARIANT:=rk3399
 endef
 
+define Package/arm-trusted-firmware-rk3568
+    $(Package/arm-trusted-firmware-rockchip-vendor)
+    DEPENDS:=@TARGET_rockchip_armv8
+    VARIANT:=rk3568
+endef
+
 define Build/Configure
 	$(SED) 's,$$$$(PKG_BUILD_DIR),$(PKG_BUILD_DIR),g' $(PKG_BUILD_DIR)/trust.ini
 	$(SED) 's,$$$$(VARIANT),$(BUILD_VARIANT),g' $(PKG_BUILD_DIR)/trust.ini
@@ -48,7 +54,9 @@ define Build/Compile
 endef
 
 define Build/InstallDev
+	$(INSTALL_DIR) '$(STAGING_DIR_IMAGE)'
 	$(CURDIR)/pack-firmware.sh install $(BUILD_VARIANT) '$(PKG_BUILD_DIR)' '$(STAGING_DIR_IMAGE)'
+	cp -rf ./files/bin/rk35/* '$(STAGING_DIR_IMAGE)'
 endef
 
 define Package/arm-trusted-firmware-rk3328/install
@@ -57,5 +65,9 @@ endef
 define Package/arm-trusted-firmware-rk3399/install
 endef
 
+define Package/arm-trusted-firmware-rk3568/install
+endef
+
 $(eval $(call BuildPackage,arm-trusted-firmware-rk3328))
 $(eval $(call BuildPackage,arm-trusted-firmware-rk3399))
+$(eval $(call BuildPackage,arm-trusted-firmware-rk3568))

@@ -17,6 +17,9 @@ case "$VARIANT" in
 	DDR="rk33/rk3399_ddr_800MHz_v1.25.bin"
 	LOADER="rk33/rk3399_miniloader_v1.26.bin"
 	;;
+"rk3568")
+    exit 0
+    ;;
 *)
 	echo -e "Not compatible with your platform: $VARIANT."
 	exit 1
