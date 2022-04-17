@@ -111,3 +111,12 @@ define Device/xunlong_orangepi-r1-plus-lts
   DEVICE_PACKAGES := kmod-usb-net-rtl8152
 endef
 TARGET_DEVICES += xunlong_orangepi-r1-plus-lts
+
+define Device/firefly_station-p2
+  DEVICE_VENDOR := Firefly
+  DEVICE_MODEL := Station P2
+  SOC := rk3568
+  UBOOT_DEVICE_NAME := station-p2-rk3568
+  IMAGE/sysupgrade.img.gz := boot-common | boot-script station-p2 | pine64-img | gzip | append-metadata
+endef
+TARGET_DEVICES += firefly_station-p2
