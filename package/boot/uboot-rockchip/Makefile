@@ -139,6 +139,17 @@ define U-Boot/rockpro64-rk3399
   ATF:=rk3399_bl31.elf
 endef
 
+define U-Boot/station-p2-rk3568
+  BUILD_SUBTARGET:=armv8
+  NAME:=StationP2
+  BUILD_DEVICES:= \
+       firefly_station-p2
+  DEPENDS:=+PACKAGE_u-boot-station-p2-rk3568:arm-trusted-firmware-rk3568
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
+  ATF:=rk3568_bl31_v1.28.elf
+  TPL:=rk3568_ddr_1560MHz_v1.11.bin
+endef
+
 UBOOT_TARGETS := \
   doornet2-rk3399 \
   guangmiao-g4c-rk3399 \
@@ -149,12 +160,14 @@ UBOOT_TARGETS := \
   nanopi-r2c-rk3328 \
   nanopi-r2s-rk3328 \
   orangepi-r1-plus-rk3328 \
-  orangepi-r1-plus-lts-rk3328
+  orangepi-r1-plus-lts-rk3328 \
+  station-p2-rk3568
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 
 UBOOT_MAKE_FLAGS += \
-  BL31=$(STAGING_DIR_IMAGE)/$(ATF)
+  BL31=$(STAGING_DIR_IMAGE)/$(ATF) \
+  RK_TPL_BIN=$(STAGING_DIR_IMAGE)/$(TPL) \
 
 define Build/Configure
 	$(call Build/Configure/U-Boot)
