@@ -80,12 +80,9 @@ define Build/Configure/U-Boot
 	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) $(UBOOT_CONFIGURE_VARS) $(UBOOT_CONFIG)_config
 endef
 
-DTC=$(wildcard $(LINUX_DIR)/scripts/dtc/dtc)
-
 define Build/Compile/U-Boot
 	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) \
 		CROSS_COMPILE=$(TARGET_CROSS) \
-		$(if $(DTC),DTC="$(DTC)") \
 		$(UBOOT_MAKE_FLAGS)
 endef
 

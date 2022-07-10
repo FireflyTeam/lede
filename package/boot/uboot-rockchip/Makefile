@@ -5,10 +5,10 @@
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
-PKG_VERSION:=2021.07
+PKG_VERSION:=2022.04
 PKG_RELEASE:=$(AUTORELEASE)
 
-PKG_HASH:=312b7eeae44581d1362c3a3f02c28d806647756c82ba8c72241c7cdbe68ba77e
+PKG_HASH:=68e065413926778e276ec3abd28bb32fa82abaa4a6898d570c1f48fbdb08bcd0
 
 PKG_MAINTAINER:=Tobias Maedel <openwrt@tbspace.de>
 
@@ -119,11 +119,11 @@ define U-Boot/nanopi-r4s-rk3399
   USE_RKBIN:=1
 endef
 
-define U-Boot/rock-pi-4-rk3399
+define U-Boot/rock-pi-4a-rk3399
   BUILD_SUBTARGET:=armv8
-  NAME:=Rock Pi 4
+  NAME:=Rock Pi 4A
   BUILD_DEVICES:= \
-    radxa_rock-pi-4
+    radxa_rock-pi-4a
   DEPENDS:=+PACKAGE_u-boot-rock-pi-4-rk3399:arm-trusted-firmware-rockchip
   PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
   ATF:=rk3399_bl31.elf
@@ -139,22 +139,35 @@ define U-Boot/rockpro64-rk3399
   ATF:=rk3399_bl31.elf
 endef
 
+define U-Boot/station-p2-rk3568
+  BUILD_SUBTARGET:=armv8
+  NAME:=StationP2
+  BUILD_DEVICES:= \
+       firefly_station-p2
+  DEPENDS:=+PACKAGE_u-boot-station-p2-rk3568:arm-trusted-firmware-rk3568
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
+  ATF:=rk3568_bl31_v1.28.elf
+  TPL:=rk3568_ddr_1560MHz_v1.11.bin
+endef
+
 UBOOT_TARGETS := \
   doornet2-rk3399 \
   guangmiao-g4c-rk3399 \
   nanopi-r4s-rk3399 \
-  rock-pi-4-rk3399 \
+  rock-pi-4a-rk3399 \
   rockpro64-rk3399 \
   doornet1-rk3328 \
   nanopi-r2c-rk3328 \
   nanopi-r2s-rk3328 \
   orangepi-r1-plus-rk3328 \
-  orangepi-r1-plus-lts-rk3328
+  orangepi-r1-plus-lts-rk3328 \
+  station-p2-rk3568
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 
 UBOOT_MAKE_FLAGS += \
-  BL31=$(STAGING_DIR_IMAGE)/$(ATF)
+  BL31=$(STAGING_DIR_IMAGE)/$(ATF) \
+  RK_TPL_BIN=$(STAGING_DIR_IMAGE)/$(TPL) \
 
 define Build/Configure
 	$(call Build/Configure/U-Boot)
