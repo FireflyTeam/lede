@@ -8,6 +8,7 @@ rockchip_setup_interfaces()
 	local board="$1"
 
 	case "$board" in
+	firefly,rk3568-roc-pc|\
 	embedfire,doornet1|\
 	embedfire,doornet2|\
 	friendlyarm,nanopi-r2c|\
@@ -40,6 +41,7 @@ rockchip_setup_macs()
 	local label_mac=""
 
 	case "$board" in
+	firefly,rk3568-roc-pc|\
 	embedfire,doornet1|\
 	embedfire,doornet2|\
 	friendlyarm,nanopi-r2c|\
