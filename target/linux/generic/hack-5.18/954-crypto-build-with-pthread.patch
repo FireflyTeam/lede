@@ -1,0 +1,23 @@
+diff --git a/certs/Makefile b/certs/Makefile
+index d8443cfb1..9fdae7dbc 100644
+--- a/certs/Makefile
++++ b/certs/Makefile
+@@ -75,4 +75,4 @@ targets += x509_revocation_list
+ hostprogs := extract-cert
+ 
+ HOSTCFLAGS_extract-cert.o = $(shell pkg-config --cflags libcrypto 2> /dev/null)
+-HOSTLDLIBS_extract-cert = $(shell pkg-config --libs libcrypto 2> /dev/null || echo -lcrypto)
++HOSTLDLIBS_extract-cert = $(shell pkg-config --libs --static libssl libcrypto 2> /dev/null || echo -lssl -lcrypto -lpthread)
+diff --git a/scripts/Makefile b/scripts/Makefile
+index ce5aa9030..1fe5d4415 100644
+--- a/scripts/Makefile
++++ b/scripts/Makefile
+@@ -15,7 +15,7 @@ HOSTCFLAGS_sorttable.o = -I$(srctree)/tools/include
+ HOSTLDLIBS_sorttable = -lpthread
+ HOSTCFLAGS_asn1_compiler.o = -I$(srctree)/include
+ HOSTCFLAGS_sign-file.o = $(shell pkg-config --cflags libcrypto 2> /dev/null)
+-HOSTLDLIBS_sign-file = $(shell pkg-config --libs libcrypto 2> /dev/null || echo -lcrypto)
++HOSTLDLIBS_sign-file = $(shell pkg-config --libs --static libssl libcrypto 2> /dev/null || echo -lssl -lcrypto -lpthread)
+ 
+ ifdef CONFIG_UNWINDER_ORC
+ ifeq ($(ARCH),x86_64)
