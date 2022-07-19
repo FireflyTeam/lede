@@ -1,29 +1,29 @@
-From 0828f9e3179073af811fafff54190c4083ebce1d Mon Sep 17 00:00:00 2001
+From 0aaad0222224547bb2418ad7363fdd662f33373a Mon Sep 17 00:00:00 2001
 From: huangjf <hjf@t-chip.com.cn>
-Date: Sat, 9 Jul 2022 11:13:34 +0800
+Date: Tue, 19 Jul 2022 15:03:23 +0800
 Subject: [PATCH] arm64: dts: rockchip: Add dts for Firefly Station P2 rk3568
 
 ---
  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
- .../arm64/boot/dts/rockchip/rk3568-roc-pc.dts | 607 ++++++++++++++++++
- 2 files changed, 608 insertions(+)
- create mode 100644 arch/arm64/boot/dts/rockchip/rk3568-roc-pc.dts
+ .../boot/dts/rockchip/rk3568-station-p2.dts   | 692 ++++++++++++++++++
+ 2 files changed, 693 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3568-station-p2.dts
 
 diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
-index c7f8feede..76b726c47 100644
+index 66e7467a3..2f0e0a7b5 100644
 --- a/arch/arm64/boot/dts/rockchip/Makefile
 +++ b/arch/arm64/boot/dts/rockchip/Makefile
-@@ -63,3 +63,4 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-quartz64-a.dtb
+@@ -70,3 +70,4 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-quartz64-a.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-evb1-v10.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-bpi-r2-pro.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-rock-3a.dtb
-+dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-roc-pc.dtb
-diff --git a/arch/arm64/boot/dts/rockchip/rk3568-roc-pc.dts b/arch/arm64/boot/dts/rockchip/rk3568-roc-pc.dts
++dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-station-p2.dtb
+diff --git a/arch/arm64/boot/dts/rockchip/rk3568-station-p2.dts b/arch/arm64/boot/dts/rockchip/rk3568-station-p2.dts
 new file mode 100644
-index 000000000..fa845dea0
+index 000000000..b596497c3
 --- /dev/null
-+++ b/arch/arm64/boot/dts/rockchip/rk3568-roc-pc.dts
-@@ -0,0 +1,607 @@
++++ b/arch/arm64/boot/dts/rockchip/rk3568-station-p2.dts
+@@ -0,0 +1,692 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
@@ -69,14 +69,22 @@ index 000000000..fa845dea0
 +	leds {
 +		compatible = "gpio-leds";
 +
-+		led-user {
-+			label = "user-led";
++		power_led: power {
++			label = "firefly:blue:power";
++			linux,default-trigger = "ir-power-click";
 +			default-state = "on";
 +			gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
-+			linux,default-trigger = "heartbeat";
 +			pinctrl-names = "default";
-+			pinctrl-0 = <&user_led_enable_h>;
-+			retain-state-suspended;
++			pinctrl-0 = <&led_power>;
++		};
++
++		user_led: user {
++			label = "firefly:yellow:user";
++			linux,default-trigger = "ir-user-click";
++			default-state = "off";
++			gpios = <&gpio1 RK_PB1 GPIO_ACTIVE_HIGH>;
++			pinctrl-names = "default";
++			pinctrl-0 = <&led_user>;
 +		};
 +	};
 +
@@ -137,7 +145,7 @@ index 000000000..fa845dea0
 +		regulator-boot-on;
 +		regulator-min-microvolt = <5000000>;
 +		regulator-max-microvolt = <5000000>;
-+		vin-supply = <&vcc5v0_sys>;
++		vin-supply = <&dc_12v>;
 +	};
 +
 +	vcc5v0_host: vcc5v0-host {
@@ -148,6 +156,8 @@ index 000000000..fa845dea0
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&vcc5v0_host_en>;
 +		regulator-always-on;
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
 +		vin-supply = <&vcc5v0_usb>;
 +	};
 +
@@ -161,6 +171,16 @@ index 000000000..fa845dea0
 +		vin-supply = <&vcc5v0_usb>;
 +	};
 +	
++	vcc_hub_reset: vcc-hub-reset {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc_hub_reset_en";
++		enable-active-high;
++		gpio = <&gpio1 RK_PA4 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&vcc_hub_reset_en>;
++		regulator-always-on;
++	};
++
 +	vcc3v3_lcd0_n: vcc3v3-lcd0-n {
 +		compatible = "regulator-fixed";
 +		regulator-name = "vcc3v3_lcd0_n";
@@ -245,15 +265,31 @@ index 000000000..fa845dea0
 +&i2c0 {
 +	status = "okay";
 +
++	fusb0: fusb30x@22 {
++		compatible = "fairchild,fusb302";
++		reg = <0x22>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&fusb0_int>;
++		int-n-gpios = <&gpio0 RK_PC1 GPIO_ACTIVE_HIGH>;
++		fusb340-switch-gpios = <&gpio3 RK_PC2 GPIO_ACTIVE_HIGH>;
++		vbus-5v-gpios = <&gpio0 RK_PA5 GPIO_ACTIVE_HIGH>;
++		status = "okay";
++	};
++
 +	rk809: pmic@20 {
 +		compatible = "rockchip,rk809";
 +		reg = <0x20>;
 +		interrupt-parent = <&gpio0>;
 +		interrupts = <RK_PA3 IRQ_TYPE_LEVEL_LOW>;
++		assigned-clocks = <&cru I2S1_MCLKOUT_TX>;
++		assigned-clock-parents = <&cru CLK_I2S1_8CH_TX>;
 +		#clock-cells = <1>;
++		clock-names = "mclk";
++		clocks = <&cru I2S1_MCLKOUT_TX>;
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&pmic_int>;
 +		rockchip,system-power-controller;
++		#sound-dai-cells = <0>;
 +		vcc1-supply = <&vcc3v3_sys>;
 +		vcc2-supply = <&vcc3v3_sys>;
 +		vcc3-supply = <&vcc3v3_sys>;
@@ -283,6 +319,7 @@ index 000000000..fa845dea0
 +
 +			vdd_gpu: DCDC_REG2 {
 +				regulator-name = "vdd_gpu";
++				regulator-always-on;
 +				regulator-init-microvolt = <900000>;
 +				regulator-initial-mode = <0x2>;
 +				regulator-min-microvolt = <500000>;
@@ -367,6 +404,7 @@ index 000000000..fa845dea0
 +
 +			vccio_acodec: LDO_REG4 {
 +				regulator-name = "vccio_acodec";
++				regulator-always-on;
 +				regulator-min-microvolt = <3300000>;
 +				regulator-max-microvolt = <3300000>;
 +
@@ -470,8 +508,12 @@ index 000000000..fa845dea0
 +
 +&pinctrl {
 +	leds {
-+		user_led_enable_h: user-led-enable-h {
++		led_power: led-power {
 +			rockchip,pins = <1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		led_user: led-user {
++			rockchip,pins = <1 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>;
 +		};
 +	};
 +
@@ -487,6 +529,15 @@ index 000000000..fa845dea0
 +		};
 +		vcc5v0_otg_en: vcc5v0-otg-en {
 +			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++		vcc_hub_reset_en: vcc-hub-reset-en {
++			rockchip,pins = <1 RK_PA4 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
++	fusb0_int {
++		fusb0_int: fusb0-int {
++			rockchip,pins = <0 RK_PC1 RK_FUNC_GPIO &pcfg_pull_up>;
 +		};
 +	};
 +
@@ -542,6 +593,22 @@ index 000000000..fa845dea0
 +	status = "okay";
 +};
 +
++&sdmmc2 {
++	max-frequency = <150000000>;
++	supports-sdio;
++	bus-width = <4>;
++	disable-wp;
++	cap-sd-highspeed;
++	cap-sdio-irq;
++	keep-power-in-suspend;
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_cmd &sdmmc2m0_clk>;
++	sd-uhs-sdr104;
++	mmc-pwrseq = <&sdio_pwrseq>;
++	non-removable;
++	status = "okay";
++};
++
 +&tsadc {
 +        status = "okay";
 +};
@@ -589,12 +656,21 @@ index 000000000..fa845dea0
 +	status = "okay";
 +};
 +
++&combphy0 {
++	status = "okay";
++};
++
++&combphy1 {
++	status = "okay";
++};
++
 +&usb2phy0_host {
 +	phy-supply = <&vcc5v0_host>;
 +	status = "okay";
 +};
 +
 +&usb2phy0_otg {
++	vbus-supply = <&vcc5v0_otg>;
 +	status = "okay";
 +};
 +
@@ -624,11 +700,20 @@ index 000000000..fa845dea0
 +	status = "okay";
 +};
 +
++&usb_host0_xhci {
++	extcon = <&usb2phy0>;
++	status = "okay";
++};
++
 +&usb_host1_ehci {
 +	status = "okay";
 +};
 +
 +&usb_host1_ohci {
++	status = "okay";
++};
++
++&usb_host1_xhci {
 +	status = "okay";
 +};
 -- 
