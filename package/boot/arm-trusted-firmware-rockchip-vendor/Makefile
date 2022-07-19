@@ -65,9 +65,6 @@ endef
 define Package/arm-trusted-firmware-rk3399/install
 endef
 
-define Package/arm-trusted-firmware-rk3568/install
-endef
-
 $(eval $(call BuildPackage,arm-trusted-firmware-rk3328))
 $(eval $(call BuildPackage,arm-trusted-firmware-rk3399))
 $(eval $(call BuildPackage,arm-trusted-firmware-rk3568))
