@@ -696,6 +696,14 @@
 	status = "okay";
 };
 
+&combphy2 {
+	status = "okay";
+};
+
+&sata2 {
+	status = "okay";
+};
+
 &pcie30phy {
 	status = "okay";
 };
