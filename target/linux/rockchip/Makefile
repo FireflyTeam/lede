@@ -20,6 +20,12 @@ DEFAULT_PACKAGES += uboot-envtools partx-utils e2fsprogs mkf2fs kmod-gpio-button
 		    automount autocore-arm autosamba fdisk cfdisk e2fsprogs ethtool haveged htop \
 		    luci-app-zerotier luci-app-ipsec-vpnd luci-app-diskman usbutils
 
+# add by firefly for kernel
+DEFAULT_PACKAGES += kmod-ikconfig
+
+# add by firefly for utils
+DEFAULT_PACKAGES += luci-app-ttyd
+
 KERNELNAME:=Image dtbs
 
 $(eval $(call BuildTarget))
