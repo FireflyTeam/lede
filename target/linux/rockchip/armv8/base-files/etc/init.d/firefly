@@ -1,0 +1,8 @@
+#!/bin/sh /etc/rc.common
+START=19
+
+start()
+{                                                                                                                                                                     
+        [ -f /etc/config/wireless ] && return 0
+        wifi config
+}
