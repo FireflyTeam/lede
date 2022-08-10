@@ -124,7 +124,7 @@ TARGET_DEVICES += xunlong_orangepi-r1-plus-lts
 
 define Device/firefly_station-p2
   DEVICE_VENDOR := Firefly
-  DEVICE_MODEL := Station P2
+  DEVICE_MODEL := Station_P2
   SOC := rk3568
   UBOOT_DEVICE_NAME := station-p2-rk3568
   IMAGE/sysupgrade.img.gz := boot-common | boot-script-bin | rockchip-gpt-img | gzip | append-metadata

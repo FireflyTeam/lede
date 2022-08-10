@@ -566,6 +566,10 @@ define Device/Build/kernel
   endif
 endef
 
+define Device/Build/image_public
+	$(TOPDIR)/scripts/img-public.sh $(1) $(DEVICE_MODEL)
+endef
+
 define Device/Build/image
   GZ_SUFFIX := $(if $(filter %dtb %gz,$(2)),,$(if $(and $(findstring ext4,$(1)),$(CONFIG_TARGET_IMAGES_GZIP)),.gz))
   $$(_TARGET): $(if $(CONFIG_JSON_OVERVIEW_IMAGE_INFO), \
@@ -595,6 +599,7 @@ define Device/Build/image
 
   $(BIN_DIR)/$(call DEVICE_IMG_NAME,$(1),$(2)): $(KDIR)/tmp/$(call DEVICE_IMG_NAME,$(1),$(2))
 	cp $$^ $$@
+	$(call Device/Build/image_public,$$@)
 
   $(BUILD_DIR)/json_info_files/$(call DEVICE_IMG_NAME,$(1),$(2)).json: $(BIN_DIR)/$(call DEVICE_IMG_NAME,$(1),$(2))$$(GZ_SUFFIX)
 	@mkdir -p $$(shell dirname $$@)
