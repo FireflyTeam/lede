@@ -31,7 +31,7 @@ define U-Boot/nanopi-r2c-rk3328
     friendlyarm_nanopi-r2c
   DEPENDS:=+PACKAGE_u-boot-nanopi-r2c-rk3328:arm-trusted-firmware-rk3328
   PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
-  ATF:=rk322xh_bl31_v1.46.elf
+  ATF:=rk322xh_bl31_v1.49.elf
   USE_RKBIN:=1
 endef
 
@@ -43,7 +43,7 @@ define U-Boot/nanopi-r2s-rk3328
     friendlyarm_nanopi-neo3
   DEPENDS:=+PACKAGE_u-boot-nanopi-r2s-rk3328:arm-trusted-firmware-rk3328
   PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
-  ATF:=rk322xh_bl31_v1.46.elf
+  ATF:=rk322xh_bl31_v1.49.elf
   USE_RKBIN:=1
 endef
 
@@ -54,7 +54,7 @@ define U-Boot/orangepi-r1-plus-rk3328
     xunlong_orangepi-r1-plus
   DEPENDS:=+PACKAGE_u-boot-orangepi-r1-plus-rk3328:arm-trusted-firmware-rk3328
   PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
-  ATF:=rk322xh_bl31_v1.46.elf
+  ATF:=rk322xh_bl31_v1.49.elf
   USE_RKBIN:=1
 endef
 
@@ -65,7 +65,7 @@ define U-Boot/orangepi-r1-plus-lts-rk3328
     xunlong_orangepi-r1-plus-lts
   DEPENDS:=+PACKAGE_u-boot-orangepi-r1-plus-lts-rk3328:arm-trusted-firmware-rk3328
   PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
-  ATF:=rk322xh_bl31_v1.46.elf
+  ATF:=rk322xh_bl31_v1.49.elf
   USE_RKBIN:=1
 endef
 
@@ -76,7 +76,7 @@ define U-Boot/doornet1-rk3328
     embedfire_doornet1
   DEPENDS:=+PACKAGE_u-boot-doornet1-rk3328:arm-trusted-firmware-rk3328
   PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
-  ATF:=rk322xh_bl31_v1.46.elf
+  ATF:=rk322xh_bl31_v1.49.elf
   USE_RKBIN:=1
 endef
 
@@ -97,7 +97,8 @@ define U-Boot/guangmiao-g4c-rk3399
   BUILD_SUBTARGET:=armv8
   NAME:=GuangMiao G4C
   BUILD_DEVICES:= \
-    sharevdi_guangmiao-g4c
+    sharevdi_guangmiao-g4c \
+    embedfire_doornet2-4gb
   DEPENDS:=+PACKAGE_u-boot-guangmiao-g4c-rk3399:arm-trusted-firmware-rockchip
   PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
   ATF:=rk3399_bl31.elf
@@ -123,6 +124,28 @@ define U-Boot/nanopi-r4se-rk3399
   PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
   ATF:=rk3399_bl31_v1.35.elf
   USE_RKBIN:=1
+endef
+
+define U-Boot/fastrhino-r66s-rk3568
+  BUILD_SUBTARGET:=armv8
+  NAME:=FastRhin-R66S
+  BUILD_DEVICES:= \
+    fastrhino_r66s
+  DEPENDS:=+PACKAGE_u-boot-fastrhino-r66s-rk3568:arm-trusted-firmware-rk3568
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
+  ATF:=rk3568_bl31_v1.28.elf
+  DDR:=rk3568_ddr_1560MHz_v1.13.bin
+endef
+
+define U-Boot/nanopi-r5s-rk3568
+  BUILD_SUBTARGET:=armv8
+  NAME:=NANOPI-R5S
+  BUILD_DEVICES:= \
+    friendlyelec_nanopi-r5s
+  DEPENDS:=+PACKAGE_u-boot-nanopi-r5s-rk3568:arm-trusted-firmware-rk3568
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
+  ATF:=rk3568_bl31_v1.28.elf
+  DDR:=rk3568_ddr_1560MHz_v1.13.bin
 endef
 
 define U-Boot/rock-pi-4-rk3399
@@ -159,9 +182,11 @@ endef
 
 UBOOT_TARGETS := \
   doornet2-rk3399 \
+  fastrhino-r66s-rk3568 \
   guangmiao-g4c-rk3399 \
   nanopi-r4s-rk3399 \
   nanopi-r4se-rk3399 \
+  nanopi-r5s-rk3568 \
   rock-pi-4-rk3399 \
   rockpro64-rk3399 \
   doornet1-rk3328 \
@@ -183,6 +208,9 @@ define Build/Configure
 	$(SED) 's/CONFIG_TOOLS_LIBCRYPTO=y/# CONFIG_TOOLS_LIBCRYPTO is not set/' $(PKG_BUILD_DIR)/.config
 	$(SED) 's#CONFIG_MKIMAGE_DTC_PATH=.*#CONFIG_MKIMAGE_DTC_PATH="$(PKG_BUILD_DIR)/scripts/dtc/dtc"#g' $(PKG_BUILD_DIR)/.config
 	echo 'CONFIG_IDENT_STRING=" OpenWrt"' >> $(PKG_BUILD_DIR)/.config
+ifneq ($(DDR),)
+	$(CP) $(STAGING_DIR_IMAGE)/$(DDR) $(PKG_BUILD_DIR)/ram_init.bin
+endif
 endef
 
 define Build/InstallDev
