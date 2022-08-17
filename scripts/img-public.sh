@@ -1,21 +1,20 @@
 #!/bin/bash
 set -ex
 
-old_img=$1
+old_gimg=$1
 device_board=$2
-openwrt=LEDE
 
-out_dir=$(dirname $old_img)
-old_img=$(basename $old_img)
+pushd $(dirname $old_gimg)
 
-new_img="$device_board"_"$openwrt"_GPT_RAW
+if [[ $old_gimg =~ "ext4" ]] && [[  $old_gimg =~ "img.gz" ]]; then
+	old_gimg=$(basename $old_gimg)
+	old_img=$(echo $old_gimg|cut -d . -f 1-2)
+	new_zimg="$device_board"_LEDE_GPT_RAW_$(date +%Y%m%d).zip
+	[ -e $new_zimg ] && rm $new_zimg
 
-if [[ $old_img =~ "ext4" ]]; then
-	new_img="$new_img"_EXT4
-elif [[ $old_img =~ "squashfs" ]];then
-	new_img="$new_img"_SQUASHFS
+	# gzip -dkfq $old_gimg
+	gzip -dkfc $old_gimg > $old_img
+	zip -mq9 $new_zimg $old_img
 fi
 
-new_img="$new_img"_$(date +%Y%m%d).zip
-
-cp $out_dir/$old_img $out_dir/$new_img
+popd
