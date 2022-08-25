@@ -138,6 +138,6 @@ define Device/firefly_station-p2
   SOC := rk3568
   UBOOT_DEVICE_NAME := station-p2-rk3568
   IMAGE/sysupgrade.img.gz := boot-common | boot-script-bin | rockchip-gpt-img | gzip | append-metadata
-  DEVICE_PACKAGES := kmod-brcmfmac ata-ahci-platform station-p2-firmware wpad
+  DEVICE_PACKAGES := kmod-brcmfmac kmod-ata-ahci-platform station-p2-firmware wpad
 endef
 TARGET_DEVICES += firefly_station-p2
